@@ -44,9 +44,6 @@ public class MainActivity extends AppCompatActivity {
         // Bind views from layout
         btnScanner = binding.btnScanner;
         instruction = binding.instruction;
-        profilePerusahaan = binding.profilePerusahaan;
-        descMain = binding.descMain;
-        judulPerusahaan = binding.judulPerusahaan;
 
         // Set edge-to-edge compatibility
         ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
@@ -54,9 +51,6 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        // Fetch and display home data
-        getDataHome();
 
         // Set button actions
         btnScanner.setOnClickListener(view -> {
@@ -67,35 +61,6 @@ public class MainActivity extends AppCompatActivity {
         instruction.setOnClickListener(view -> {
             startActivity(new Intent(MainActivity.this, Instruction.class));
             finish();
-        });
-    }
-
-    private void getDataHome() {
-        ResponseAPI res = APIServer.konekRetrofit().create(ResponseAPI.class);
-        Call<ResponseHome> process = res.getDataHome();
-        process.enqueue(new Callback<ResponseHome>() {
-            @Override
-            public void onResponse(Call<ResponseHome> call, Response<ResponseHome> response) {
-                if (response.code() == 200 && response.body() != null && response.body().getCode() != 404) {
-                    Log.d("Response", "getDataHome:" + response.body());
-                    // Load company profile image using Glide
-                    Glide.with(MainActivity.this)
-                            .load(url + response.body().getData().get(0).getFoto())
-                            .into(profilePerusahaan);
-
-                    // Set text views
-                    descMain.setText(response.body().getData().get(0).getDeskripsi());
-                    judulPerusahaan.setText(response.body().getData().get(0).getNama());
-                } else {
-                    Toast.makeText(MainActivity.this, "Data tidak ditemukan!", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseHome> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                Log.d("Error MainActivity", t.getMessage());
-            }
         });
     }
 
