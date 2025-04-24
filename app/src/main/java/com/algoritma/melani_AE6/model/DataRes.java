@@ -2,9 +2,18 @@ package com.algoritma.melani_AE6.model;
 
 
 public class DataRes {
-    private int id;
-    private String kode_produk, nama, foto, komposisi, no_pirt, produsen, tgl_produksi, tgl_expire;
+    // Deklarasi variabel untuk menyimpan data produk
+    private int id;  // ID produk
+    private String kode_produk;  // Kode unik produk
+    private String nama;  // Nama produk
+    private String foto;  // Nama file foto produk
+    private String komposisi;  // Komposisi bahan produk
+    private String no_pirt;  // Nomor PIRT produk
+    private String produsen;  // Nama produsen
+    private String tgl_produksi;  // Tanggal produksi
+    private String tgl_expire;  // Tanggal kadaluarsa
 
+    // Getter dan Setter untuk setiap field
     public int getId() {
         return id;
     }

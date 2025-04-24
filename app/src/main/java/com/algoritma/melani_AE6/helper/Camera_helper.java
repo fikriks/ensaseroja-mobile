@@ -41,85 +41,101 @@ import retrofit2.Call;
 import retrofit2.Callback;
 
 public class Camera_helper {
+    // Context aplikasi Android
     private final Context context;
 
+    // Komponen UI untuk kamera dan scanner QR
     private PreviewView previewView;
     private Button qrCodeBtn;
     private RelativeLayout textOri;
     private ImageView imgScanner;
     private TextView textingOri;
 
+    // Future untuk camera provider
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+    // Variabel untuk menyimpan hasil scan QR
     private String qrCodeS;
     private boolean qrFound = false;
 
+    // Constructor dengan parameter Context
     public Camera_helper(Context context) {
         this.context = context;
     }
 
+    // Method untuk meminta permission kamera
     public void requestCamera() {
         if (ActivityCompat.checkSelfPermission(context.getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            startCamera();
+            startCamera();  // Jika permission sudah diberikan, mulai kamera
         } else {
+            // Jika belum, request permission
             ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.CAMERA}, 0);
         }
     }
 
+    // Method untuk memulai kamera
     public void startCamera() {
         cameraProviderFuture = ProcessCameraProvider.getInstance(context);
         cameraProviderFuture.addListener(() -> {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-                bindCameraPreview(cameraProvider);
+                bindCameraPreview(cameraProvider);  // Bind preview kamera
             } catch (ExecutionException | InterruptedException e) {
                 Toast.makeText(context, "Gagal Memulai Kamera " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }, ContextCompat.getMainExecutor(context));
     }
 
+    // Method untuk bind komponen UI
     private void bindViews() {
         previewView = ((Activity) context).findViewById(R.id.activity_camera_scanner);
         qrCodeBtn = ((Activity) context).findViewById(R.id.activity_main_qrCodeFoundButton);
         textOri = ((Activity) context).findViewById(R.id.textOri);
         textingOri = ((Activity) context).findViewById(R.id.textingOri);
         imgScanner = ((Activity) context).findViewById(R.id.imageView);
-        qrCodeBtn.setVisibility(View.INVISIBLE);
+        qrCodeBtn.setVisibility(View.INVISIBLE);  // Sembunyikan tombol QR code awal
     }
 
+    // Method untuk bind preview kamera dan analisis QR
     public void bindCameraPreview(@NonNull ProcessCameraProvider cameraProvider) {
         bindViews();
 
+        // Konfigurasi preview kamera
         Preview preview = new Preview.Builder().build();
         CameraSelector cameraSelector = new CameraSelector.Builder()
-                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                .requireLensFacing(CameraSelector.LENS_FACING_BACK)  // Gunakan kamera belakang
                 .build();
 
         preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
+        // Konfigurasi image analysis untuk scanner QR
         ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
-                .setTargetResolution(new Size(640, 480))
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .setTargetResolution(new Size(640, 480))  // Resolusi target
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)  // Strategi buffer
                 .build();
 
+        // Set analyzer untuk QR code
         imageAnalysis.setAnalyzer(ContextCompat.getMainExecutor(context), new QRCodeImageAnalyzer(new QRCodeFoundListener() {
             @Override
             public void onQRCodeFound(String _qrCode) {
                 qrCodeS = _qrCode;
                 qrFound = true;
-                qrCodeBtn.setVisibility(View.VISIBLE);
-                decryptData(qrCodeS);
+                qrCodeBtn.setVisibility(View.VISIBLE);  // Tampilkan tombol QR code
+                decryptData(qrCodeS);  // Proses dekripsi data QR
             }
 
             @Override
             public void qrCodeNotFound() {
                 qrFound = false;
+                // Sembunyikan tombol setelah 6 detik jika tidak ada QR
                 new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> qrCodeBtn.setVisibility(View.INVISIBLE), 6000);
             }
         }));
 
+        // Bind kamera ke lifecycle
         cameraProvider.bindToLifecycle((LifecycleOwner) context, cameraSelector, imageAnalysis, preview);
     }
 
+    // Method untuk dekripsi data QR
     public void decryptData(String enc) {
         ResponseAPI res = APIServer.konekRetrofit().create(ResponseAPI.class);
         Call<Response> process = res.getData(enc);
@@ -129,6 +145,7 @@ public class Camera_helper {
                 if (response.body() != null) {
                     if (response.body().getMessage().equals("Data Original")) {
                         textOri.setVisibility(View.VISIBLE);
+                        // Buat intent untuk menampilkan hasil produk
                         Intent intent = new Intent(context, ResultProduct.class);
                         intent.putExtra("produk", response.body().getData().get(0).getNama());
                         intent.putExtra("komposisi", response.body().getData().get(0).getKomposisi());
@@ -141,9 +158,9 @@ public class Camera_helper {
                         ((Activity) context).startActivity(intent);
                     }
                 } else {
+                    // Tampilkan pesan jika bukan produk original
                     textOri.setVisibility(View.VISIBLE);
                     textingOri.setText("Bukan Produk Original");
-
                     new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> textOri.setVisibility(GONE), 5000);
                 }
             }
