@@ -55,4 +55,6 @@ dependencies {
     // Tambahkan dependensi untuk QR Code scanning dan decoding
     implementation(libs.core)
     implementation(libs.play.services.mlkit.barcode.scanning)
+
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }

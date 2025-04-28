@@ -1,65 +1,174 @@
 package com.algoritma.melani_AE6.activity;
 
+import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
-import com.algoritma.melani_AE6.MainActivity;
-import com.algoritma.melani_AE6.databinding.ActivityScannerQrBinding;
-import com.algoritma.melani_AE6.helper.Camera_helper;
+import com.algoritma.melani_AE6.R;
+import com.algoritma.melani_AE6.api.APIServer;
+import com.algoritma.melani_AE6.api.ResponseAPI;
+import com.algoritma.melani_AE6.model.DataRes;
+import com.journeyapps.barcodescanner.BarcodeCallback;
+import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.CaptureManager;
+import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ScannerQR extends AppCompatActivity {
-    // Konstanta untuk request permission kamera
-    private static final int PERMISSION_REQUEST_CAMERA = 0;
-    // Binding untuk view menggunakan View Binding
-    private ActivityScannerQrBinding binding;
+    private static final int CAMERA_PERMISSION_REQUEST = 1;
+    private CaptureManager capture;
+    private DecoratedBarcodeView barcodeView;
+    private boolean torchOn = false;
+    private boolean isScanned = false;
+    private ProgressDialog progressDialog;
+    private ResponseAPI responseAPI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Inflate layout menggunakan View Binding
-        binding = ActivityScannerQrBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        setContentView(R.layout.activity_scanner_qr);
 
-        // Mengatur padding untuk edge-to-edge display
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+        // Inisialisasi API Service
+        responseAPI = APIServer.konekRetrofit().create(ResponseAPI.class);
+
+        barcodeView = findViewById(R.id.camera_preview);
+        ImageButton btnTorch = findViewById(R.id.btn_torch);
+
+        // Setup Progress Dialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Memproses...");
+        progressDialog.setCancelable(false);
+
+        barcodeView.decodeSingle(new BarcodeCallback() {
+            @Override
+            public void barcodeResult(BarcodeResult result) {
+                if (result.getText() != null && !isScanned) {
+                    isScanned = true;
+                    String qrContent = result.getText();
+
+                    // Panggil API dengan QR code yang di-scan
+                    fetchProductData(qrContent);
+                }
+            }
         });
 
-        // Meminta permission untuk menggunakan kamera
-        new Camera_helper(this).requestCamera();
+        btnTorch.setOnClickListener(v -> {
+            torchOn = !torchOn;
+            barcodeView.getBarcodeView().setTorch(torchOn);
+            btnTorch.setImageResource(torchOn ? R.drawable.ic_flash_on : R.drawable.ic_flash_off);
+        });
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST);
+        } else {
+            startScanning();
+        }
+    }
+
+    private void fetchProductData(String qrCode) {
+        progressDialog.show();
+
+        Call<DataRes> call = responseAPI.getData(qrCode);
+        call.enqueue(new Callback<DataRes>() {
+            @Override
+            public void onResponse(Call<DataRes> call, Response<DataRes> response) {
+                progressDialog.dismiss();
+
+                if (response.isSuccessful() && response.body() != null) {
+                    DataRes produkResponse = response.body();
+
+                    if (response.code() == 200) {
+                        // Pindah ke ResultActivity dengan membawa data produk
+                        Intent intent = new Intent(ScannerQR.this, ResultProduct.class);
+                        intent.putExtra("produk", response.body().getData().get(0).getNama());
+                        intent.putExtra("komposisi", response.body().getData().get(0).getKomposisi());
+                        intent.putExtra("foto", response.body().getData().get(0).getFoto());
+                        intent.putExtra("no_pirt", response.body().getData().get(0).getNo_pirt());
+                        intent.putExtra("produksi", response.body().getData().get(0).getProdusen());
+                        intent.putExtra("tgl_produksi", response.body().getData().get(0).getTgl_produksi());
+                        intent.putExtra("tgl_expire", response.body().getData().get(0).getTgl_expire());
+                        startActivity(intent);
+                        finish(); // Tutup ScannerActivity jika diperlukan
+                    } else {
+                        String errorMsg = produkResponse.getMessage() != null ?
+                                produkResponse.getMessage() : "Terjadi kesalahan";
+                        Toast.makeText(ScannerQR.this, errorMsg, Toast.LENGTH_LONG).show();
+                        isScanned = false; // Reset langsung agar bisa scan lagi
+                    }
+                } else {
+                    if (response.code() == 400) {
+                        Toast.makeText(ScannerQR.this, "Kode QR tidak valid", Toast.LENGTH_LONG).show();
+                    } else if (response.code() == 404) {
+                        Toast.makeText(ScannerQR.this, "Produk tidak ditemukan", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(ScannerQR.this, "Gagal memproses data", Toast.LENGTH_LONG).show();
+                    }
+                    isScanned = false; // Reset langsung agar bisa scan lagi
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<DataRes> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(ScannerQR.this, "Koneksi gagal: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                isScanned = false; // Reset langsung agar bisa scan lagi
+            }
+        });
+    }
+
+    private void startScanning() {
+        capture = new CaptureManager(this, barcodeView);
+        capture.initializeFromIntent(getIntent(), null);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // Handle hasil request permission kamera
-        if (requestCode == PERMISSION_REQUEST_CAMERA) {
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Jika permission diberikan, mulai kamera
-                new Camera_helper(this).startCamera();
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startScanning();
             } else {
-                // Jika permission ditolak, tampilkan pesan
-                Toast.makeText(this, "Camera Permission Denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Izin kamera diperlukan untuk scan QR", Toast.LENGTH_LONG).show();
             }
         }
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        // Kembali ke MainActivity saat tombol back ditekan
-        startActivity(new Intent(this, MainActivity.class));
-        finish();  // Menutup activity saat ini
+    protected void onResume() {
+        super.onResume();
+        if (capture != null) {
+            capture.onResume();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (capture != null) {
+            capture.onPause();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (capture != null) {
+            capture.onDestroy();
+        }
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 }

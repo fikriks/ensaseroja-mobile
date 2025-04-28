@@ -1,6 +1,8 @@
 package com.algoritma.melani_AE6.model;
 
 
+import java.util.List;
+
 public class DataRes {
     // Deklarasi variabel untuk menyimpan data produk
     private int id;  // ID produk
@@ -13,6 +15,10 @@ public class DataRes {
     private String tgl_produksi;  // Tanggal produksi
     private String tgl_expire;  // Tanggal kadaluarsa
 
+    private String message;  // Message
+
+    private List<DataRes> data;
+
     // Getter dan Setter untuk setiap field
     public int getId() {
         return id;
@@ -20,6 +26,15 @@ public class DataRes {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    // Getter dan Setter untuk setiap field
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getKode_produk() {
@@ -84,5 +99,15 @@ public class DataRes {
 
     public void setTgl_expire(String tgl_expire) {
         this.tgl_expire = tgl_expire;
+    }
+
+    // Getter untuk list
+    public List<DataRes> getData() {
+        return data;
+    }
+
+    // Setter untuk list
+    public void setData(List<DataRes> data) {
+        this.data = data;
     }
 }

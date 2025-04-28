@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/main"
+    android:background="@android:color/white"
     tools:context=".activity.Instruction">
 
     <RelativeLayout
@@ -29,7 +29,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Nama Produk"
-                    android:textSize="40dp"
+                    android:textSize="28dp"
                     android:textColor="@color/black"
                     android:fontFamily="@font/inter_bold"/>
             </LinearLayout>
