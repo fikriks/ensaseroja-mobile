@@ -66,7 +66,7 @@ public class ResultProduct extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         // Kembali ke ScannerQR saat tombol back ditekan
-        startActivity(new Intent(this, ScannerQR.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();  // Menutup activity saat ini
     }
 }

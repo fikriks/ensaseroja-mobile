@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -89,17 +90,22 @@ public class ScannerQR extends AppCompatActivity {
                     DataRes produkResponse = response.body();
 
                     if (response.code() == 200) {
-                        // Pindah ke ResultActivity dengan membawa data produk
-                        Intent intent = new Intent(ScannerQR.this, ResultProduct.class);
-                        intent.putExtra("produk", response.body().getData().get(0).getNama());
-                        intent.putExtra("komposisi", response.body().getData().get(0).getKomposisi());
-                        intent.putExtra("foto", response.body().getData().get(0).getFoto());
-                        intent.putExtra("no_pirt", response.body().getData().get(0).getNo_pirt());
-                        intent.putExtra("produksi", response.body().getData().get(0).getProdusen());
-                        intent.putExtra("tgl_produksi", response.body().getData().get(0).getTgl_produksi());
-                        intent.putExtra("tgl_expire", response.body().getData().get(0).getTgl_expire());
-                        startActivity(intent);
-                        finish(); // Tutup ScannerActivity jika diperlukan
+                        if(response.body().getMessage().equals("Data Original")){
+                            // Pindah ke ResultActivity dengan membawa data produk
+                            Intent intent = new Intent(ScannerQR.this, ResultProduct.class);
+                            intent.putExtra("produk", response.body().getData().get(0).getNama());
+                            intent.putExtra("komposisi", response.body().getData().get(0).getKomposisi());
+                            intent.putExtra("foto", response.body().getData().get(0).getFoto());
+                            intent.putExtra("no_pirt", response.body().getData().get(0).getNo_pirt());
+                            intent.putExtra("produksi", response.body().getData().get(0).getProdusen());
+                            intent.putExtra("tgl_produksi", response.body().getData().get(0).getTgl_produksi());
+                            intent.putExtra("tgl_expire", response.body().getData().get(0).getTgl_expire());
+                            startActivity(intent);
+                            finish(); // Tutup ScannerActivity jika diperlukan
+                        } else {
+                            Toast.makeText(ScannerQR.this, "Kode QR tidak valid", Toast.LENGTH_LONG).show();
+                            isScanned = false;
+                        }
                     } else {
                         String errorMsg = produkResponse.getMessage() != null ?
                                 produkResponse.getMessage() : "Terjadi kesalahan";
@@ -109,8 +115,6 @@ public class ScannerQR extends AppCompatActivity {
                 } else {
                     if (response.code() == 400) {
                         Toast.makeText(ScannerQR.this, "Kode QR tidak valid", Toast.LENGTH_LONG).show();
-                    } else if (response.code() == 404) {
-                        Toast.makeText(ScannerQR.this, "Produk tidak ditemukan", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(ScannerQR.this, "Gagal memproses data", Toast.LENGTH_LONG).show();
                     }
