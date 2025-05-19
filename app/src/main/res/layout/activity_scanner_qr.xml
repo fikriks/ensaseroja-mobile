@@ -48,4 +48,16 @@
         android:src="@drawable/ic_flash_off"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Toggle Flashlight" />
+
+    <!-- Close Button (X icon) -->
+    <ImageButton
+        android:id="@+id/btn_close"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentStart="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/close"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="@color/white"
+        android:contentDescription="Close Scanner" />
 </RelativeLayout>

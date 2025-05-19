@@ -1,7 +1,8 @@
 package com.algoritma.melani_AE6.activity;
 
-import android.content.Intent;
+import  android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -28,6 +29,14 @@ public class Instruction extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Set click listener for back button
+        binding.btnBack.setOnClickListener(v -> goBackToMainActivity());
+    }
+
+    private void goBackToMainActivity() {
+        startActivity(new Intent(Instruction.this, MainActivity.class));
+        finish();  // Menutup activity saat ini
     }
 
     @Override

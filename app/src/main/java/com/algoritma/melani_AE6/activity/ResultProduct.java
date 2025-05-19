@@ -3,6 +3,7 @@ package com.algoritma.melani_AE6.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,6 +35,9 @@ public class ResultProduct extends AppCompatActivity {
             return insets;
         });
 
+        // Set click listener for back button
+        binding.btnBack.setOnClickListener(v -> goBackToMainActivity());
+
         // Mengambil data dari Intent yang dikirim
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -60,6 +64,11 @@ public class ResultProduct extends AppCompatActivity {
                 finish();  // Menutup activity saat ini
             }, 3000);
         }
+    }
+
+    private void goBackToMainActivity() {
+        startActivity(new Intent(ResultProduct.this, MainActivity.class));
+        finish();  // Menutup activity saat ini
     }
 
     @Override

@@ -24,6 +24,16 @@
                 android:layout_height="wrap_content"
                 android:gravity="left"
                 android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/back"
+                    android:contentDescription="Kembali"
+                    android:layout_marginEnd="16dp"/>
+
                 <TextView
                     android:id="@+id/nama_produk"
                     android:layout_width="wrap_content"

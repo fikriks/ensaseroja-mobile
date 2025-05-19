@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="TabIndicatorStyle" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabIndicator">@null</item>
+        <item name="tabPaddingStart">4dp</item>
+        <item name="tabPaddingEnd">4dp</item>
+        <item name="tabBackground">@android:color/transparent</item>
+        <item name="tabInlineLabel">true</item>
+    </style>
+
+    <style name="MyTabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabBackground">@android:color/transparent</item>
+        <item name="tabIndicatorColor">#eeab42</item>
+    </style>
+</resources>

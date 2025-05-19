@@ -1,0 +1,40 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <set>
+            <objectAnimator
+                android:propertyName="backgroundColor"
+                android:valueFrom="#FFFFFF"
+                android:valueTo="#60B5FF"
+                android:duration="300"/>
+            <objectAnimator
+                android:propertyName="scaleX"
+                android:valueFrom="1.0"
+                android:valueTo="1.2"
+                android:duration="300"/>
+            <objectAnimator
+                android:propertyName="scaleY"
+                android:valueFrom="1.0"
+                android:valueTo="1.2"
+                android:duration="300"/>
+        </set>
+    </item>
+    <item android:state_selected="false">
+        <set>
+            <objectAnimator
+                android:propertyName="backgroundColor"
+                android:valueFrom="#60B5FF"
+                android:valueTo="#FFFFFF"
+                android:duration="300"/>
+            <objectAnimator
+                android:propertyName="scaleX"
+                android:valueFrom="1.2"
+                android:valueTo="1.0"
+                android:duration="300"/>
+            <objectAnimator
+                android:propertyName="scaleY"
+                android:valueFrom="1.2"
+                android:valueTo="1.0"
+                android:duration="300"/>
+        </set>
+    </item>
+</selector>

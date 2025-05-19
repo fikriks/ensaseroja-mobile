@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.algoritma.melani_AE6.MainActivity;
 import com.algoritma.melani_AE6.R;
 import com.algoritma.melani_AE6.api.APIServer;
 import com.algoritma.melani_AE6.api.ResponseAPI;
@@ -45,6 +47,7 @@ public class ScannerQR extends AppCompatActivity {
 
         barcodeView = findViewById(R.id.camera_preview);
         ImageButton btnTorch = findViewById(R.id.btn_torch);
+        ImageButton btnClose = findViewById(R.id.btn_close);
 
         // Setup Progress Dialog
         progressDialog = new ProgressDialog(this);
@@ -70,11 +73,18 @@ public class ScannerQR extends AppCompatActivity {
             btnTorch.setImageResource(torchOn ? R.drawable.ic_flash_on : R.drawable.ic_flash_off);
         });
 
+        btnClose.setOnClickListener(v -> goBackToMainActivity());
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST);
         } else {
             startScanning();
         }
+    }
+
+    private void goBackToMainActivity() {
+        startActivity(new Intent(ScannerQR.this, MainActivity.class));
+        finish();  // Menutup activity saat ini
     }
 
     private void fetchProductData(String qrCode) {
@@ -119,7 +129,6 @@ public class ScannerQR extends AppCompatActivity {
                         Toast.makeText(ScannerQR.this, "Gagal memproses data", Toast.LENGTH_LONG).show();
                     }
                     isScanned = false; // Reset langsung agar bisa scan lagi
-                    finish();
                 }
             }
 
