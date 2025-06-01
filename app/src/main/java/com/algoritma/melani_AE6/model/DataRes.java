@@ -7,6 +7,7 @@ public class DataRes {
     // Deklarasi variabel untuk menyimpan data produk
     private int id;  // ID produk
     private String kode_produk;  // Kode unik produk
+    private String kode; // Kode unik produksi
     private String nama;  // Nama produk
     private String foto;  // Nama file foto produk
     private String komposisi;  // Komposisi bahan produk
@@ -39,6 +40,10 @@ public class DataRes {
 
     public String getKode_produk() {
         return kode_produk;
+    }
+
+    public String getKode_produksi() {
+        return kode;
     }
 
     public void setKode_produk(String kode_produk) {

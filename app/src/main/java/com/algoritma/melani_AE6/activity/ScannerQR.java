@@ -104,6 +104,7 @@ public class ScannerQR extends AppCompatActivity {
                             // Pindah ke ResultActivity dengan membawa data produk
                             Intent intent = new Intent(ScannerQR.this, ResultProduct.class);
                             intent.putExtra("produk", response.body().getData().get(0).getNama());
+                            intent.putExtra("kode_produksi", response.body().getData().get(0).getKode_produksi());
                             intent.putExtra("komposisi", response.body().getData().get(0).getKomposisi());
                             intent.putExtra("foto", response.body().getData().get(0).getFoto());
                             intent.putExtra("no_pirt", response.body().getData().get(0).getNo_pirt());

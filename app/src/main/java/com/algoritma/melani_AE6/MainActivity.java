@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         List<Integer> images = new ArrayList<>();
         images.add(R.drawable.rumah_produksi);
         images.add(R.drawable.foto_produk_1);
-        images.add(R.drawable.rumah_produksi);
+        images.add(R.drawable.foto_produk_2);
 
         viewPager.setAdapter(new ImageSliderAdapter(images));
 

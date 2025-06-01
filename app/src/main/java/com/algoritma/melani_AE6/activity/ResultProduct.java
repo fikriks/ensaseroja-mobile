@@ -43,6 +43,7 @@ public class ResultProduct extends AppCompatActivity {
         if (extras != null) {
             // Menampilkan data produk ke UI
             binding.namaProduk.setText("Nama Produk : " + extras.getString("produk"));
+            binding.kodeproduksi.setText("Kode Produksi : " + extras.getString("kode_produksi"));
             binding.komposisi.setText("Komposisi : " + extras.getString("komposisi"));
             binding.ijin.setText("No PIR-T : " + extras.getString("no_pirt"));
             binding.produsen.setText("Di produksi oleh : " + extras.getString("produksi"));
