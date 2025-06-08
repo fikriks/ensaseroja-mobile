@@ -42,6 +42,7 @@ public class ResultProduct extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             // Menampilkan data produk ke UI
+            binding.ciphertext.setText("Ciphertext : " + extras.getString("ciphertext"));
             binding.namaProduk.setText("Nama Produk : " + extras.getString("produk"));
             binding.kodeproduksi.setText("Kode Produksi : " + extras.getString("kode_produksi"));
             binding.komposisi.setText("Komposisi : " + extras.getString("komposisi"));

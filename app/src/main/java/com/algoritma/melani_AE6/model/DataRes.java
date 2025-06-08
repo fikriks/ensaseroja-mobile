@@ -16,6 +16,8 @@ public class DataRes {
     private String tgl_produksi;  // Tanggal produksi
     private String tgl_expire;  // Tanggal kadaluarsa
 
+    private String kode_enkripsi;  // Tanggal kadaluarsa
+
     private String message;  // Message
 
     private List<DataRes> data;
@@ -44,6 +46,14 @@ public class DataRes {
 
     public String getKode_produksi() {
         return kode;
+    }
+
+    public void setCipettext(String kode_enkripsi) {
+        this.kode_enkripsi = kode_enkripsi;
+    }
+
+    public String getCiphertext() {
+        return kode_enkripsi;
     }
 
     public void setKode_produk(String kode_produk) {

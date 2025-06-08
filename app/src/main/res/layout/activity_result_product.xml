@@ -77,6 +77,13 @@
                     android:gravity="center"
                     android:orientation="vertical">
                     <TextView
+                        android:id="@+id/ciphertext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ciphertext : "
+                        android:textColor="@color/white"
+                        android:fontFamily="@font/inter_regular"/>
+                    <TextView
                         android:id="@+id/kodeproduksi"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
